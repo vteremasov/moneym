@@ -12,3 +12,4 @@ nemo64:bootstrap
 useraccounts:bootstrap
 accounts-password
 iron:router
+useraccounts:iron-routing
