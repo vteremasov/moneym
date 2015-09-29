@@ -64,6 +64,8 @@ AccountsTemplates.configureRoute('signUp', {
   redirect: '/wallets'
 });
 
+var Wallets = new Mongo.Collection("wallets");
+
 Router.route('/', function () {
   this.layout('main');
   this.render("nav", {to: "nav"});
@@ -73,19 +75,41 @@ Router.route('/', function () {
 });
 
 
-Router.route('/wallets', function () {
-  this.layout('main');
-  this.render("nav", {to: "nav"});
-  this.render('wallets');
-}, {
-  name: 'wallets'
+Router.route('/wallets',
+//  function () {
+//  this.layout('main');
+//  this.render("nav", {to: "nav"});
+//  this.render('wallets');
+//},
+  {
+    template: "wallets",
+    layout: "main",
+    nav: {to: "nav"},
+    data: function () {return {
+      wallets: Wallets.find({})
+    };},
+    name: 'wallets'
 });
 
-var wallets = new Mongo.Collection("wallets");
-
-
 if (Meteor.isClient) {
-
+  Template.wallets.events({
+    "submit .new-wallet": function (event) {
+      event.preventDefault();
+      var wallet = {
+        type: event.target.type.value,
+        name: event.target.name.value,
+        currency: event.target.currency.value,
+        amountSign: event.target.amountSign.value,
+        amount: Math.abs(event.target.amount.value),
+        comment: event.target.comment.value,
+        users: [Meteor.userId()],
+        createdAt: new Date(),
+        owner: Meteor.userId()
+      };
+      $('#addWalletModal').modal('hide');
+      Wallets.insert(wallet)
+    }
+  })
 }
 
 if (Meteor.isServer) {
